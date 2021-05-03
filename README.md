@@ -5,8 +5,8 @@ a C++17 threading library
 ## Supports
 
 #### Creation
-* creating a thread in a suspended state    `createThread`
-* creating a thread in a running state      `createThreadSuspended`
+* creating a thread in a running state    `createThread`
+* creating a thread in a suspended state      `createThreadSuspended`
 
 #### Signals
 * sending signals to a thread               `sendSignal`
