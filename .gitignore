@@ -7,3 +7,4 @@
 /release_asan_BUILD
 /release_asan_EXECUTABLE
 /googletest
+/.gdb_history
