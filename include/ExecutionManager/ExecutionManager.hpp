@@ -16,7 +16,7 @@ class ExecutionManager {
 
     Thread * createThread(ThreadCreationInfo * threadCreationInfo);
 public:
-    std::atomic<bool> DEBUG = true;
+    std::atomic<bool> DEBUG { false };
 
     template< class Rep, class Period, class Predicate >
     bool timeout(const std::chrono::duration<Rep, Period>& rel_time, Predicate pred) {
@@ -32,7 +32,7 @@ public:
 
     static constexpr bool timed_out = true;
 
-    std::atomic<bool> running = false;
+    std::atomic<bool> running { false };
     Thread *this_thread;
     std::vector<ThreadCreationInfo *> threads;
 

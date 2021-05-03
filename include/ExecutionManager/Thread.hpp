@@ -20,7 +20,7 @@ public:
     std::atomic<bool> suspend_started { false };
     std::atomic<bool> killable { false};
     std::atomic<int> status { 0 };
-    std::atomic<int> signal = -1;
+    std::atomic<int> signal { -1 };
     std::atomic<bool> core_dumped { false };
     std::atomic<bool> reaped { false };
     std::atomic<bool> reapable { false };
@@ -42,7 +42,7 @@ public:
 struct ThreadCreationInfo {
     ThreadCreationInfo(size_t stack_size, int (*main)(void *), void *arg);
 
-    std::atomic<bool> DEBUG = true;
+    std::atomic<bool> DEBUG { false };
     size_t stack_size = 0;
     int (*main)(void *) = nullptr;
     void * arg = nullptr;

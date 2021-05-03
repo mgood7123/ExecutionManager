@@ -1,6 +1,6 @@
 # ExecutionManager
 
-a C++17 threading library
+a C++11 threading library
 
 ## Supports
 
