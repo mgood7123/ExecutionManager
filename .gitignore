@@ -1,0 +1,9 @@
+/debug_BUILD
+/debug_EXECUTABLE
+/debug_asan_BUILD
+/debug_asan_EXECUTABLE
+/release_BUILD
+/release_EXECUTABLE
+/release_asan_BUILD
+/release_asan_EXECUTABLE
+/googletest

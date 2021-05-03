@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+testBuilder_add_source(ExecutionManager_tests ExecutionManager_general.cpp)
+testBuilder_add_library(ExecutionManager_tests gtest_main)
+testBuilder_add_library(ExecutionManager_tests ExecutionManager)
+testBuilder_build(ExecutionManager_tests EXECUTABLES)
