@@ -8,3 +8,4 @@
 /release_asan_EXECUTABLE
 /googletest
 /.gdb_history
+/UNTILLOUTPUTMATCHESEOF.txt
