@@ -61,20 +61,3 @@ TEST(ExecutionManager_Core, createThreadSuspendedTerminate) {
     Thread * t = e.createThreadSuspended(test, nullptr);
     e.terminate();
 }
-
-//int tf(void * a) {
-//    return 1;
-//}
-//
-//TEST(ExecetionManager_Core, Single_Thread) {
-//    ExecutionManager * e = new ExecutionManager();
-//    setExecutionManager(e);
-//    e->debug = true;
-//    int a = 5;
-//    LOG_INFO("executing thread");
-//    Thread * x = threadNew(tf, &a);
-//    LOG_INFO("executed thread");
-//    LOG_INFO("joining thread");
-//    threadJoin(x);
-//    LOG_INFO("joined thread");
-//}
