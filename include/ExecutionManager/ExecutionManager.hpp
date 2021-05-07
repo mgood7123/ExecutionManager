@@ -59,30 +59,52 @@ public:
         static constexpr bool value = decltype(test<F, Args...>(nullptr))::value;
     };
 
-#define THREAD_TEMPLATE template<typename Function, typename... Arguments, typename = typename std::enable_if<is_callable<Function, Arguments...>::value>::type>
-#define STORE_INVOKE invoke = [=] { return func(parameters...); };
+#define TEMPLATE_IS_CALLABLE is_callable<Function, Arguments...>::value
+#define TEMPLATE_IS_RETURN_TYPE(TYPE) std::is_same<decltype(std::declval<Function&>()(std::declval<Arguments>()...)), TYPE>::value
+#define TEMPLATE_IF(X) typename std::enable_if<X>::type* = nullptr
+#define TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(TYPE) template<typename Function, typename... Arguments, TEMPLATE_IF(TEMPLATE_IS_CALLABLE && TEMPLATE_IS_RETURN_TYPE(TYPE))>
+#define TEMPLATE_STORE_INVOKE_VOID invoke = [=] { func(parameters...); return 0; };
+#define TEMPLATE_STORE_INVOKE_INT invoke = [=] { return func(parameters...); };
 
-    THREAD_TEMPLATE
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(void)
     Thread * createThread(Function func, Arguments... parameters) {
-        STORE_INVOKE
+        TEMPLATE_STORE_INVOKE_VOID
         Thread * thread = createThreadInternal(default_stack_size, invoker, &invoke);
         waitForStop(thread);
         continueThread(thread);
         return thread;
     }
 
-    THREAD_TEMPLATE
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(int)
+    Thread * createThread(Function func, Arguments... parameters) {
+        TEMPLATE_STORE_INVOKE_INT
+        Thread * thread = createThreadInternal(default_stack_size, invoker, &invoke);
+        waitForStop(thread);
+        continueThread(thread);
+        return thread;
+    }
+
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(void)
     Thread * createThread(size_t stack_size, Function func, Arguments... parameters) {
-        STORE_INVOKE
+        TEMPLATE_STORE_INVOKE_VOID
         Thread * thread = createThreadInternal(stack_size, invoker, &invoke);
         waitForStop(thread);
         continueThread(thread);
         return thread;
     }
 
-    THREAD_TEMPLATE
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(int)
+    Thread * createThread(size_t stack_size, Function func, Arguments... parameters) {
+        TEMPLATE_STORE_INVOKE_INT
+        Thread * thread = createThreadInternal(stack_size, invoker, &invoke);
+        waitForStop(thread);
+        continueThread(thread);
+        return thread;
+    }
+
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(void)
     Thread * createThreadSuspended(Function func, Arguments... parameters) {
-        STORE_INVOKE
+        TEMPLATE_STORE_INVOKE_VOID
         Thread * thread = createThreadInternal(default_stack_size, invoker, &invoke);
         thread->suspend = true;
         thread->suspend_started = false;
@@ -90,9 +112,19 @@ public:
         return thread;
     }
 
-    THREAD_TEMPLATE
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(int)
+    Thread * createThreadSuspended(Function func, Arguments... parameters) {
+        TEMPLATE_STORE_INVOKE_INT
+        Thread * thread = createThreadInternal(default_stack_size, invoker, &invoke);
+        thread->suspend = true;
+        thread->suspend_started = false;
+        waitForStop(thread);
+        return thread;
+    }
+
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(void)
     Thread * createThreadSuspended(size_t stack_size, Function func, Arguments... parameters) {
-        STORE_INVOKE
+        TEMPLATE_STORE_INVOKE_VOID
         Thread * thread = createThreadInternal(stack_size, invoker, &invoke);
         thread->suspend = true;
         thread->suspend_started = false;
@@ -100,8 +132,22 @@ public:
         return thread;
     }
 
-#undef STORE_INVOKE
-#undef THREAD_TEMPLATE
+    TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE(int)
+    Thread * createThreadSuspended(size_t stack_size, Function func, Arguments... parameters) {
+        TEMPLATE_STORE_INVOKE_INT
+        Thread * thread = createThreadInternal(stack_size, invoker, &invoke);
+        thread->suspend = true;
+        thread->suspend_started = false;
+        waitForStop(thread);
+        return thread;
+    }
+
+#undef TEMPLATE_STORE_INVOKE_INT
+#undef TEMPLATE_STORE_INVOKE_VOID
+#undef TEMPLATE_EXPECT_FUNCTION_RETURN_TYPE
+#undef TEMPLATE_IF
+#undef TEMPLATE_IS_RETURN_TYPE
+#undef TEMPLATE_IS_CALLABLE
 
     static void threadInfo(Thread * t);
 
