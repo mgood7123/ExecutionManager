@@ -2,7 +2,15 @@
 
 a C++11 threading library
 
+## BREAKS
+* gdb - workaround `(gdb)$ handle SIGKILL nostop SIGCONT nostop SIGHUP nostop`
+* valgrind - no known workaround
+
 ## Supports
+
+#### Misc
+* custom stack size, both per ExecutionEngine and per Thread
+* debug output
 
 #### Creation
 * creating a thread in a running state    `createThread`

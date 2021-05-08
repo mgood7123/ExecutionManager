@@ -50,18 +50,44 @@ Thread * ExecutionManager::createThread(ThreadCreationInfo *threadCreationInfo) 
 
 Thread *ExecutionManager::createThreadInternal(size_t stack_size, int (*main)(void *), void *arg) {
     ThreadCreationInfo * threadCreationInfo = new ThreadCreationInfo(stack_size, main, arg);
+    threadCreationInfo->setDebug(DEBUG.load());
     Thread * thread = createThread(threadCreationInfo);
     if (thread == nullptr) delete threadCreationInfo;
     return thread;
 }
 
-ExecutionManager::ExecutionManager() {
+void ExecutionManager::setDebug(bool value) {
+    DEBUG = value;
+}
+
+void ExecutionManager::setDebug(Thread * thread, bool value) {
+    thread->stack.setDebug(value);
+}
+
+void ExecutionManager::init() {
+    this_thread_creation_info = nullptr;
     this_thread = createThread(default_stack_size, instance, this);
     if (this_thread == nullptr) {
         LOG_ALWAYS_FATAL("failed to create main execution manager thread");
     }
+    this_thread_creation_info = threads[0];
     while (!running);
     if (DEBUG) LOG_INFO("EXECUTION THREAD IS RUNNING");
+}
+
+ExecutionManager::ExecutionManager() {
+    init();
+}
+
+ExecutionManager::ExecutionManager(size_t default_stack_size) {
+    this->default_stack_size = default_stack_size;
+    init();
+}
+
+ExecutionManager::ExecutionManager(bool debug, size_t default_stack_size) {
+    DEBUG = debug;
+    this->default_stack_size = default_stack_size;
+    init();
 }
 
 void ExecutionManager::terminate() {
@@ -76,11 +102,14 @@ void ExecutionManager::terminate() {
         }
         joinThread(this_thread);
         this_thread = nullptr;
+        delete this_thread_creation_info;
+        this_thread_creation_info = nullptr;
         threads.clear();
     }
 }
 
 ExecutionManager::~ExecutionManager() {
+    if (DEBUG) LOG_INFO("destructor called for ExecutionManager");
     terminate();
 }
 
@@ -134,11 +163,11 @@ void ExecutionManager::threadInfo(Thread * t) {
 }
 
 void ExecutionManager::joinThread(Thread *thread) {
-    if (thread == nullptr) return;
     if (DEBUG) {
         LOG_INFO("JOINING");
         threadInfo(thread);
     }
+    if (thread == nullptr) return;
     if (thread->suspend && !thread->suspend_started) continueThread(thread);
     switch (thread->status) {
         case Thread::StatusList::DEAD:
@@ -391,7 +420,9 @@ void ExecutionManager::stopThread(Thread *thread) {
         thread->status = Thread::StatusList::STOPPED;
         // we are sending a signal to ourself, so we must exist
         // no need to check call sendSignal for error
+        if (DEBUG) LOG_INFO("STOPPING SELF: %d", thread_pid);
         kill(pid, SIGSTOP); // this needs to be waited on
+        if (DEBUG) LOG_INFO("CONTINUED SELF: %d", thread_pid);
         // update our status
         if (thread->suspend) thread->suspend_started = true;
         thread->status = Thread::StatusList::RUNNING;

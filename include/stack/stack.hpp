@@ -5,12 +5,20 @@
 
 class Stack {
     int getStackDirection(int *addr);
+    bool DEBUG = false;
 public:
+    void setDebug(bool value);
     static constexpr int DIRECTION_UP = 1;
     static constexpr int DIRECTION_DOWN = 2;
 
     Stack(std::size_t sz);
     ~Stack();
+
+    Stack();
+    Stack(const Stack&) = delete;
+    Stack(Stack&&) = delete;
+    Stack& operator=(const Stack&) = delete;
+    Stack& operator=(Stack&&) = delete;
 
     void alloc(std::size_t sz);
     void dealloc();
@@ -22,8 +30,6 @@ public:
 
     int getStackDirection();
     const char *getStackDirectionAsString();
-
-    Stack();
 };
 
 #endif //STACK_STACK_HPP

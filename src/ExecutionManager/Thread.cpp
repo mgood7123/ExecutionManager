@@ -10,14 +10,22 @@
 #include <Log.hpp>
 #include <ExecutionManager/ExecutionManager.hpp>
 
+Thread::Thread() {};
+ThreadCreationInfo::ThreadCreationInfo() {};
+
 ThreadCreationInfo::ThreadCreationInfo(size_t stack_size, int (*main)(void *), void *arg) {
     this->stack_size = stack_size;
     this->main = main;
     this->arg = arg;
 }
 
-Thread::~Thread() {
-    stack.dealloc();
+ThreadCreationInfo::~ThreadCreationInfo() {
+    if (DEBUG) LOG_INFO("destructor called for ThreadCreationInfo");
+}
+
+void ThreadCreationInfo::setDebug(bool value) {
+    DEBUG = value;
+    thread.stack.setDebug(value);
 }
 
 int ThreadCreationInfo::clone() {

@@ -11,6 +11,11 @@
 class Thread {
 public:
     Stack stack;
+    Thread();
+    Thread(const Thread&) = delete;
+    Thread(Thread&&) = delete;
+    Thread& operator=(const Thread&) = delete;
+    Thread& operator=(Thread&&) = delete;
     std::atomic<long int> pid { -1 };
     std::atomic<bool> died { false };
 
@@ -35,14 +40,22 @@ public:
         static constexpr int EXITED = 4;
         static constexpr int KILLED_BY_SIGNAL = 5;
     };
-
-    ~Thread();
 };
 
-struct ThreadCreationInfo {
+class ThreadCreationInfo {
+    bool DEBUG = false;
+
+public:
+    ThreadCreationInfo();
+    ~ThreadCreationInfo();
+    ThreadCreationInfo(const ThreadCreationInfo&) = delete;
+    ThreadCreationInfo(ThreadCreationInfo&&) = delete;
+    ThreadCreationInfo& operator=(const ThreadCreationInfo&) = delete;
+    ThreadCreationInfo& operator=(ThreadCreationInfo&&) = delete;
+
+    void setDebug(bool value);
     ThreadCreationInfo(size_t stack_size, int (*main)(void *), void *arg);
 
-    std::atomic<bool> DEBUG { false };
     size_t stack_size = 0;
     int (*main)(void *) = nullptr;
     void * arg = nullptr;

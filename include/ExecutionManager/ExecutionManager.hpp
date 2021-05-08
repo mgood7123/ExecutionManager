@@ -11,12 +11,38 @@
 #include <Log.hpp>
 #include <chrono>
 
+/**
+ * (gdb)$ handle SIGKILL nostop SIGCONT nostop SIGHUP nostop
+ */
 class ExecutionManager {
     static int instance(void * arg);
-
     Thread * createThread(ThreadCreationInfo * threadCreationInfo);
-public:
     std::atomic<bool> DEBUG { false };
+    void init();
+
+public:
+    static constexpr size_t Bytes(int value) {
+        return value;
+    }
+
+    static constexpr size_t Kilobytes(int value) {
+        return Bytes(value)*1024;
+    }
+
+    static constexpr size_t Megabytes(int value) {
+        return Kilobytes(value)*1024;
+    }
+
+    static constexpr size_t Gigabytes(int value) {
+        return Megabytes(value)*1024;
+    }
+
+    // 1 Megabyte
+    static constexpr size_t DEFAULT_STACK_SIZE = 1*1024*1024;
+
+    size_t default_stack_size = DEFAULT_STACK_SIZE;
+    void setDebug(bool value);
+    void setDebug(Thread * thread, bool value);
 
     template< class Rep, class Period, class Predicate >
     bool timeout(const std::chrono::duration<Rep, Period>& rel_time, Predicate pred) {
@@ -34,9 +60,12 @@ public:
 
     std::atomic<bool> running { false };
     Thread *this_thread;
+    ThreadCreationInfo * this_thread_creation_info;
     std::vector<ThreadCreationInfo *> threads;
 
     ExecutionManager();
+    ExecutionManager(size_t default_stack_size);
+    ExecutionManager(bool debug, size_t default_stack_size);
     ~ExecutionManager();
 
     void terminate();
@@ -160,8 +189,6 @@ public:
     void waitForExit(Thread *thread);
     void stopThread(Thread *thread);
     void continueThread(Thread *thread);
-
-    static constexpr int default_stack_size = 4096;
 };
 
 #endif //EXECUTIONMANAGER_EXECUTIONMANAGER_HPP

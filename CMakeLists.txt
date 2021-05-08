@@ -20,6 +20,7 @@ testBuilder_add_source(Log src/Log.cpp)
 testBuilder_build_shared_library(Log)
 
 testBuilder_add_source(Stack src/stack/stack.cpp)
+testBuilder_add_library(Stack Log)
 testBuilder_build_shared_library(Stack)
 add_subdirectory(tests/stack)
 
