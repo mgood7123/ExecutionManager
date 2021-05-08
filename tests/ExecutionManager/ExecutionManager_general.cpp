@@ -61,3 +61,14 @@ TEST(ExecutionManager_Core, createThreadSuspendedTerminate) {
     Thread * t = e.createThreadSuspended(test, nullptr);
     e.terminate();
 }
+
+void SEGFAULT() {
+    int * s = nullptr;
+    *s = 0;
+}
+
+TEST(ExecutionManager_Core, segv) {
+    ExecutionManager e;
+    Thread * t = e.createThread(SEGFAULT);
+    e.terminate();
+}
