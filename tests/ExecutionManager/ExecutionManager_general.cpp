@@ -67,7 +67,7 @@ void SEGFAULT() {
     *s = 0;
 }
 
-TEST(ExecutionManager_Core, segv) {
+TEST(ExecutionManager_Core, Intentional_Segmentation_Fault) {
     ExecutionManager e;
     Thread * t = e.createThread(SEGFAULT);
     e.terminate();
