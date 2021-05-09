@@ -1,6 +1,7 @@
 if [[ $# < 2 ]]
     then
         echo "usage: $(basename $0) \"output to match against\" command <optional args>"
+	exit
 fi
 
 string="$1"

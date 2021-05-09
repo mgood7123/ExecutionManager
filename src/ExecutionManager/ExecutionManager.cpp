@@ -216,7 +216,7 @@ void ExecutionManager::waitForStop(Thread *thread) {
 
     if (DEBUG) LOG_INFO("waiting for STOP pid %d", pid);
     int status;
-    if (waitpid(pid, &status, WSTOPPED|WCONTINUED) != -1) {
+    if (waitpid(pid, &status, __WCLONE|WSTOPPED|WCONTINUED) != -1) {
         if (WIFEXITED(status)) {
             thread->status = Thread::StatusList::EXITED;
             thread->returnCode = WEXITSTATUS(status);
@@ -267,7 +267,7 @@ void ExecutionManager::waitForContinue(Thread *thread) {
 
     if (DEBUG) LOG_INFO("waiting for CONTINUE pid %d", pid);
     int status;
-    if (waitpid(pid, &status, WCONTINUED|WSTOPPED) != -1) {
+    if (waitpid(pid, &status, __WCLONE|WCONTINUED|WSTOPPED) != -1) {
         if (WIFEXITED(status)) {
             thread->status = Thread::StatusList::EXITED;
             thread->returnCode = WEXITSTATUS(status);
@@ -318,7 +318,7 @@ void ExecutionManager::waitForExit(Thread *thread) {
 
     if (DEBUG) LOG_INFO("waiting for EXIT pid %d", pid);
     int status;
-    if (waitpid(pid, &status, WCONTINUED|WSTOPPED) != -1) {
+    if (waitpid(pid, &status, __WCLONE|WCONTINUED|WSTOPPED) != -1) {
         if (WIFEXITED(status)) {
             thread->status = Thread::StatusList::EXITED;
             thread->returnCode = WEXITSTATUS(status);
@@ -368,7 +368,7 @@ void ExecutionManager::waitForStopOrExit(Thread *thread) {
 
     if (DEBUG) LOG_INFO("waiting for STOP OR EXIT pid %d", pid);
     int status;
-    if (waitpid(pid, &status, WCONTINUED|WSTOPPED) != -1) {
+    if (waitpid(pid, &status, __WCLONE|WCONTINUED|WSTOPPED) != -1) {
         if (WIFEXITED(status)) {
             thread->status = Thread::StatusList::EXITED;
             thread->returnCode = WEXITSTATUS(status);
@@ -421,8 +421,11 @@ void ExecutionManager::stopThread(Thread *thread) {
         // we are sending a signal to ourself, so we must exist
         // no need to check call sendSignal for error
         if (DEBUG) LOG_INFO("STOPPING SELF: %d", thread_pid);
-        kill(pid, SIGSTOP); // this needs to be waited on
-        if (DEBUG) LOG_INFO("CONTINUED SELF: %d", thread_pid);
+        if (kill(thread_pid, SIGSTOP) == -1) {
+            LOG_ERROR("internal_error (stopThread): thread pid has been killed or is owned by a different process");
+            abort();
+        }; // this needs to be waited on
+        if (DEBUG) LOG_INFO("STOPPED SELF: %d", thread_pid);
         // update our status
         if (thread->suspend) thread->suspend_started = true;
         thread->status = Thread::StatusList::RUNNING;

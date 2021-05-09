@@ -18,18 +18,18 @@ TEST(ExecutionManager_Core, store_and_invoke) {
 }
 
 TEST(ExecutionManager_Core, init) {
-    ExecutionManager e;
+    ExecutionManager e(true, 4096);
     ASSERT_NE(e.this_thread, nullptr);
 }
 
 TEST(ExecutionManager_Core, initTerminate) {
-    ExecutionManager e;
+    ExecutionManager e(true, 4096);
     e.terminate();
     ASSERT_EQ(e.this_thread, nullptr);
 }
 
 TEST(ExecutionManager_Core, createThread) {
-    ExecutionManager e;
+    ExecutionManager e(true, 4096);
     Thread * t = e.createThread(test, nullptr);
     e.joinThread(t);
 }
@@ -68,7 +68,7 @@ void SEGFAULT() {
 }
 
 TEST(ExecutionManager_Core, Intentional_Segmentation_Fault) {
-    ExecutionManager e;
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThread(SEGFAULT);
     e.terminate();
 }

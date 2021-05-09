@@ -83,14 +83,15 @@ int ThreadCreationInfo::clone() {
             // the calling process should be sent the signal SIGCHLD when the child process
             // terminates, which lets the calling process use the wait(2) call to wait for the child
             // process to exit.
-            SIGCHLD
-            |
+            //SIGCHLD
+            //|
             // the calling process and the child process run in the same memory space.
             // In particular, memory writes performed by the calling process or by the child process
             // are also visible in the other process.
             // Moreover, any memory mapping or unmapping performed with mmap(2) or munmap(2) by the
             // child or calling process also affects the other process.
             CLONE_VM;
+    if (DEBUG) LOG_INFO("calling clone(2)");
     int pid = ::clone(cloneArgs.fn, cloneArgs.child_stack, cloneArgs.flags, cloneArgs.arg);
     int saved_errno = errno;
     thread.pid = pid;

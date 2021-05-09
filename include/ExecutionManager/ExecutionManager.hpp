@@ -12,7 +12,8 @@
 #include <chrono>
 
 /**
- * (gdb)$ handle SIGKILL nostop SIGCONT nostop SIGHUP nostop
+ * (gdb)$ handle SIGSTOP nostop noprint SIGCONT nostop noprint SIGHUP nostop noprint
+ * gdb ./debug_EXECUTABLE/ExecutionManager_tests -ex "handle SIGSTOP nostop noprint SIGCONT nostop noprint SIGHUP nostop noprint" -ex "set debug infrun 1" -ex "set debug lin-lwp 1"
  */
 class ExecutionManager {
     static int instance(void * arg);
