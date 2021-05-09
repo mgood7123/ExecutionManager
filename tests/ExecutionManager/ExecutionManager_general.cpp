@@ -18,46 +18,46 @@ TEST(ExecutionManager_Core, store_and_invoke) {
 }
 
 TEST(ExecutionManager_Core, init) {
-    ExecutionManager e(true, 4096);
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     ASSERT_NE(e.this_thread, nullptr);
 }
 
 TEST(ExecutionManager_Core, initTerminate) {
-    ExecutionManager e(true, 4096);
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     e.terminate();
     ASSERT_EQ(e.this_thread, nullptr);
 }
 
 TEST(ExecutionManager_Core, createThread) {
-    ExecutionManager e(true, 4096);
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThread(test, nullptr);
     e.joinThread(t);
 }
 
 TEST(ExecutionManager_Core, createThreadNoJoin) {
-    ExecutionManager e;
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThread(test, nullptr);
 }
 
 TEST(ExecutionManager_Core, createThreadTerminate) {
-    ExecutionManager e;
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThread(test, nullptr);
     e.terminate();
 }
 
 TEST(ExecutionManager_Core, createThreadSuspended) {
-    ExecutionManager e;
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThreadSuspended(test, nullptr);
     e.joinThread(t);
 }
 
 TEST(ExecutionManager_Core, createThreadSuspendedNoJoin) {
-    ExecutionManager e;
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThreadSuspended(test, nullptr);
 }
 
 TEST(ExecutionManager_Core, createThreadSuspendedTerminate) {
-    ExecutionManager e;
+    ExecutionManager e(true, ExecutionManager::DEFAULT_STACK_SIZE);
     Thread * t = e.createThreadSuspended(test, nullptr);
     e.terminate();
 }
